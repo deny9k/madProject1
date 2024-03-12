@@ -1,5 +1,7 @@
 import 'add_income.dart';
 import 'package:flutter/material.dart';
+import 'database/db.dart';
+import 'database/dbtest.dart';
 
 import 'login.dart';
 
@@ -41,7 +43,7 @@ class _ExpenseDashboardState extends State<ExpenseDashboard> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Expense Tracker Dashboard'),
+        title: Text('Home'),
         leading: IconButton(
           icon: Icon(Icons.menu),
           onPressed: () {
