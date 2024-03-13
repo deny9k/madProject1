@@ -106,6 +106,34 @@ class _SignUpPageState extends State<SignUpPage> {
   }
 
   void _submit() async {
-    if (_formKey.currentState!.validate()) {}
+    if (_formKey.currentState!.validate()) {
+      _formKey.currentState!.save();
+      // Save data to database
+      final database = ExpenseDatabase();
+      await database.init();
+
+      // Navigate to the login page by calling its constructor
+      try {
+        await database.insertUser(_firstName, _lastName, _email, _password);
+        // Navigate to the login page by calling its constructor
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => LoginPage()),
+        );
+      } catch (e) {
+        if (e.toString().contains('UNIQUE constraint failed')) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+                content: Text(
+                    'Email already in use. Please use a different email.')),
+          );
+        } else {
+          // Handle any other database exception
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('An error occurred. Please try again.')),
+          );
+        }
+      }
+    }
   }
 }
