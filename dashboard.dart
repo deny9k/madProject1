@@ -1,9 +1,10 @@
 import 'add_income.dart';
+import 'add_expense.dart';
 import 'package:flutter/material.dart';
 import 'database/db.dart';
-import 'database/dbtest.dart';
 
 import 'login.dart';
+import 'summary.dart';
 
 final database = ExpenseDatabase();
 
@@ -36,21 +37,8 @@ class _ExpenseDashboardState extends State<ExpenseDashboard> {
   }
 
   void _getData() async {
-       print('_getData call');
-    e_total = 0;
-    i_total = 0;
-    expenses = await database.getExpenses();
-    incomes = await database.getIncomes();
-
-    for (final expense in expenses) {
-      e_total += expense['amount'];
-    }
-    for (final income in incomes) {
-      i_total += income['amount'];
-    }
-    setState(() {});
+    //add backend code here
   }
-}
 
   @override
   Widget build(BuildContext context) {
@@ -81,19 +69,17 @@ class _ExpenseDashboardState extends State<ExpenseDashboard> {
               ListTile(
                 title: Text('Add Expense'),
                 onTap: () {
-                  // final result = Navigator.of(context).push(
-                  // MaterialPageRoute(builder: (context) => AddExpensePage()), navigate to add expense page when created
-                  //     );
+                  final result = Navigator.of(context).push(
+                    MaterialPageRoute(builder: (context) => AddExpensePage()),
+                  );
                 },
               ),
               ListTile(
                 title: Text('Weekly Summary'),
                 onTap: () {
-                  // Navigator.of(context).push(
-                  //   MaterialPageRoute(
-                  //       builder: (context) =>
-                  //           SummaryPage()), // Navigate to summary page when creeated
-                  // );
+                  Navigator.of(context).push(
+                    MaterialPageRoute(builder: (context) => SummaryPage()),
+                  );
                 },
               ),
               ListTile(
@@ -193,9 +179,11 @@ class _ExpenseDashboardState extends State<ExpenseDashboard> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          // Navigator.of(context).push(
-          //   MaterialPageRoute(builder: (context) => AddExpensePage()), //navigate to add expense page
-          // );
+          Navigator.of(context).push(
+            MaterialPageRoute(
+                builder: (context) =>
+                    AddExpensePage()), //navigate to add expense page
+          );
         },
         child: Icon(Icons.add),
       ),
