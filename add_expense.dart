@@ -1,32 +1,28 @@
-import 'package:expensetracker/db.dart';
-import 'package:expensetracker/dbtest.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 import 'dashboard.dart';
 import 'database/db.dart';
-import 'database/dbtest.dart';
+import 'viewData.dart';
 
-// final database = ExpenseDatabase();
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await database.init();
   runApp(
     ChangeNotifierProvider(
       create: (context) => DataProvider(),
-      child: ExpensePage(), // This is the renamed AddExpensePageState.
+      child: ExpensePage(),
     ),
   );
 }
 
 class ExpensePage extends StatelessWidget {
-  // Renamed from AddExpensePageState
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      themeMode: ThemeMode.dark, // Set the theme mode to dark
+      themeMode: ThemeMode.light,
       darkTheme: ThemeData.dark(), // Use the dark theme
-      title: 'Add Expense ',
+      title: 'Add Expense',
 
       home: AddExpensePage(),
     );
@@ -40,8 +36,6 @@ class DataModel {
 
 class DataProvider with ChangeNotifier {
   DataModel data = DataModel();
-
-  // ... you can add methods or logic here if needed
 }
 
 class AddExpensePage extends StatefulWidget {
@@ -180,7 +174,6 @@ class _AddExpensePageState extends State<AddExpensePage> {
               SizedBox(height: 20),
               Center(
                 child: Container(
-                  width: 200,
                   child: ElevatedButton(
                     onPressed: () async {
                       if (category.isNotEmpty && amount.isNotEmpty) {
@@ -193,14 +186,6 @@ class _AddExpensePageState extends State<AddExpensePage> {
                         }
                       }
                     },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.green,
-                      foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30.0),
-                      ),
-                      minimumSize: Size(double.infinity, 40),
-                    ),
                     child: Text('Submit'),
                   ),
                 ),
