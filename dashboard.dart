@@ -36,8 +36,21 @@ class _ExpenseDashboardState extends State<ExpenseDashboard> {
   }
 
   void _getData() async {
-    //add backend code here
+       print('_getData call');
+    e_total = 0;
+    i_total = 0;
+    expenses = await database.getExpenses();
+    incomes = await database.getIncomes();
+
+    for (final expense in expenses) {
+      e_total += expense['amount'];
+    }
+    for (final income in incomes) {
+      i_total += income['amount'];
+    }
+    setState(() {});
   }
+}
 
   @override
   Widget build(BuildContext context) {
