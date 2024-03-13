@@ -63,7 +63,25 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  Future<void> _login() async {}
+  Future<void> _login() async {
+    final email = _emailController.text;
+    final password = _passwordController.text;
+
+    final users = await _dbHelper.getUsersByEmail(email);
+    for (var user in users) {
+      if (user[ExpenseDatabase.username] == email &&
+          user[ExpenseDatabase.password] == password) {
+        // Successfully logged in.
+        // Navigate to the home page or display a success message.
+        var theUserId = user[ExpenseDatabase.userId];
+        ExpenseDatabase.loggedInUserIdValue = theUserId;
+        print('Successfully logged in.');
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (context) => ExpenseTrackerApp()),
+        );
+        return;
+      }
+    }
 
   void _invalidLoginMsg() {
     final snackBar = SnackBar(
