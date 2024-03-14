@@ -1,3 +1,7 @@
+import 'dart:math';
+
+import 'package:pie_chart/pie_chart.dart';
+
 import 'database/db.dart';
 import 'package:flutter/material.dart';
 import 'dashboard.dart';
@@ -29,6 +33,8 @@ class _SummaryPageState extends State<SummaryPage> {
   double totalBudget = 0;
   double spent = 0;
   double remaining = 0;
+  Map<String, double> dataMap = {};
+  List<Color> colors = [];
 
   @override
   void initState() {
@@ -36,7 +42,73 @@ class _SummaryPageState extends State<SummaryPage> {
     fetchData();
   }
 
-  void fetchData() async {}
+  void fetchData() async {
+    await getExpenseTotal();
+    await getBudget();
+    await sumExpensesByCategory();
+    await getRemaining();
+
+    setState(() {
+      colors = generateRandomColors(dataMap.length);
+    });
+  }
+
+  Future<double> getExpenseTotal() async {
+    spent = 0;
+    final expenses = await database.getExpenses();
+    for (var expense in expenses) {
+      spent += expense['amount'] as double;
+    }
+    return spent;
+  }
+
+  Future<double> getBudget() async {
+    final budgets = await database.getBudgets();
+    if (budgets.isEmpty) {
+      totalBudget = 0;
+      return 0;
+    }
+    totalBudget = budgets[0]['amount'] as double;
+    return totalBudget;
+  }
+
+  Future<Map<String, double>> sumExpensesByCategory() async {
+    dataMap = {}; // Reset the data map
+    final expenses = await database.getExpenses();
+    for (var expense in expenses) {
+      final category = expense['category'] as String?;
+      final amount = expense['amount'] as double;
+      if (category != null) {
+        if (dataMap.containsKey(category)) {
+          dataMap[category] = (dataMap[category]! + amount);
+        } else {
+          dataMap[category] = amount;
+        }
+      }
+    }
+    return dataMap;
+  }
+
+  Future<void> getRemaining() async {
+    remaining = totalBudget - spent;
+  }
+
+  List<Color> generateRandomColors(int numberOfColors) {
+    Random random = Random();
+
+    List<Color> colors = [];
+    for (int i = 0; i < numberOfColors; i++) {
+      Color color = Color.fromARGB(
+        255,
+        random.nextInt(256),
+        random.nextInt(256),
+        random.nextInt(256),
+      );
+      colors.add(color);
+    }
+
+    return colors;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -72,6 +144,35 @@ class _SummaryPageState extends State<SummaryPage> {
                           TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                     ),
                     Padding(padding: const EdgeInsets.all(8.0)),
+                    dataMap.isNotEmpty
+                        ? PieChart(
+                            dataMap: dataMap,
+                            animationDuration: Duration(milliseconds: 800),
+                            chartLegendSpacing: 32.0,
+                            chartRadius:
+                                MediaQuery.of(context).size.width / 2.5,
+                            initialAngleInDegree: 0,
+                            chartType: ChartType.disc,
+                            ringStrokeWidth: 32.0,
+                            legendOptions: const LegendOptions(
+                              showLegendsInRow: true,
+                              legendPosition: LegendPosition.bottom,
+                              showLegends: true,
+                              legendShape: BoxShape.rectangle,
+                              legendTextStyle: TextStyle(
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            chartValuesOptions: const ChartValuesOptions(
+                              showChartValueBackground: false,
+                              showChartValues: true,
+                              showChartValuesInPercentage: true,
+                              showChartValuesOutside: true,
+                              decimalPlaces: 1,
+                            ),
+                            colorList: colors,
+                          )
+                        : Center(child: Text('No data available'))
                   ],
                 ),
               ),
