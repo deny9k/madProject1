@@ -5,6 +5,7 @@ import 'database/db.dart';
 
 import 'login.dart';
 import 'summary.dart';
+import 'viewData.dart';
 
 final database = ExpenseDatabase();
 
@@ -29,15 +30,31 @@ class _ExpenseDashboardState extends State<ExpenseDashboard> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   double expenseTotal = 0;
   double incomeTotal = 0;
+  List<Map<String, dynamic>> expenses = [];
+  List<Map<String, dynamic>> incomes = [];
+  List<Map<String, dynamic>> total = [];
 
   @override
   void initState() {
     super.initState();
     _getData();
+    setState(() {}); //refresh page when coming back to it
   }
 
   void _getData() async {
-    //add backend code here
+    print('_getData call');
+    expenseTotal = 0;
+    incomeTotal = 0;
+    expenses = await database.getExpenses();
+    incomes = await database.getIncomes();
+
+    for (final expense in expenses) {
+      expenseTotal += expense['amount'];
+    }
+    for (final income in incomes) {
+      incomeTotal += income['amount'];
+    }
+    setState(() {}); //refresh data when coming back to it
   }
 
   @override
@@ -69,7 +86,7 @@ class _ExpenseDashboardState extends State<ExpenseDashboard> {
               ListTile(
                 title: Text('Add Expense'),
                 onTap: () {
-                  final result = Navigator.of(context).push(
+                  Navigator.of(context).push(
                     MaterialPageRoute(builder: (context) => AddExpensePage()),
                   );
                 },
@@ -79,6 +96,15 @@ class _ExpenseDashboardState extends State<ExpenseDashboard> {
                 onTap: () {
                   Navigator.of(context).push(
                     MaterialPageRoute(builder: (context) => SummaryPage()),
+                  );
+                },
+              ),
+              ListTile(
+                title: Text('View Data'),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => ViewDataPage()),
                   );
                 },
               ),
@@ -158,7 +184,7 @@ class _ExpenseDashboardState extends State<ExpenseDashboard> {
                           ),
                           child: Padding(
                             padding: EdgeInsets.all(12),
-                            child: Text('\$ ${expenseTotal}',
+                            child: Text('\$ ${incomeTotal}',
                                 style: TextStyle(
                                   fontSize: 30,
                                   color: Colors.white,
@@ -173,6 +199,28 @@ class _ExpenseDashboardState extends State<ExpenseDashboard> {
               ),
               SizedBox(height: 20),
               //add code for recent transactions
+              Text(
+                'Recent Transactions',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                ),
+              ),
+              SizedBox(height: 10),
+              Expanded(
+                child: ListView.builder(
+                    itemCount: expenses.length,
+                    itemBuilder: (context, index) {
+                      return TransactionCard(
+                        transactionName: '${expenses[index]["category"]}',
+                        amount: expenses[index]["amount"],
+                        date: '${expenses[index]["expense_date"]}',
+                        icon: Icons.shopping_cart,
+                        categoryColor: Colors.purple,
+                      );
+                    }),
+              ),
             ],
           ),
         ),
@@ -186,6 +234,59 @@ class _ExpenseDashboardState extends State<ExpenseDashboard> {
           );
         },
         child: Icon(Icons.add),
+      ),
+    );
+  }
+}
+
+class TransactionCard extends StatelessWidget {
+  final String transactionName;
+  final double amount;
+  final String date;
+  final IconData icon;
+  final Color categoryColor;
+
+  TransactionCard({
+    required this.transactionName,
+    required this.amount,
+    required this.date,
+    required this.icon,
+    required this.categoryColor,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      elevation: 2,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(25),
+      ),
+      child: ListTile(
+        leading: Icon(
+          icon,
+          size: 45,
+          color: categoryColor,
+        ),
+        title: Text(
+          transactionName,
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        subtitle: Text(
+          date,
+          style: TextStyle(
+            color: Colors.grey,
+          ),
+        ),
+        trailing: Text(
+          '\$$amount',
+          style: TextStyle(
+            fontSize: 25,
+            fontWeight: FontWeight.bold,
+            color: Colors.lightBlue,
+          ),
+        ),
       ),
     );
   }

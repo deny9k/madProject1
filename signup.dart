@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'database/db.dart';
 import 'login.dart';
 
 class SignUpPage extends StatefulWidget {
@@ -18,6 +19,7 @@ class _SignUpPageState extends State<SignUpPage> {
     RegExp regex = RegExp(r'^(?=.*?[0-9])(?=.*[A-Z])(?=.*[a-z])');
 
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(title: Text('Create an Account')),
       body: Padding(
         padding: const EdgeInsets.all(12.0),
@@ -61,7 +63,7 @@ class _SignUpPageState extends State<SignUpPage> {
                 ),
                 keyboardType: TextInputType.emailAddress,
                 validator: (value) {
-                  if (value == null || value.isEmpty || !value.contains('@')) {
+                  if (value == null || value.isEmpty) {
                     return 'Please enter email';
                   }
                   if (!value.contains('@') || !value.contains('.')) {
@@ -112,10 +114,8 @@ class _SignUpPageState extends State<SignUpPage> {
       final database = ExpenseDatabase();
       await database.init();
 
-      // Navigate to the login page by calling its constructor
       try {
         await database.insertUser(_firstName, _lastName, _email, _password);
-        // Navigate to the login page by calling its constructor
         Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => LoginPage()),
