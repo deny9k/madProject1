@@ -14,9 +14,18 @@ void main() async {
   runApp(
     ChangeNotifierProvider(
       create: (context) => DataProvider(),
-      child: ExpensePage(),
+      child: AddIncomePage(),
     ),
   );
+}
+
+class DataModel {
+  double? incomeAmount;
+  PayPeriod? incomePayPeriod;
+}
+
+class DataProvider with ChangeNotifier {
+  DataModel data = DataModel();
 }
 
 class IncomePage extends StatelessWidget {
@@ -26,7 +35,6 @@ class IncomePage extends StatelessWidget {
       themeMode: ThemeMode.light,
       darkTheme: ThemeData.dark(), // Use the dark theme
       title: 'Add Income',
-
       home: AddIncomePage(),
     );
   }
@@ -38,6 +46,7 @@ class AddIncomePage extends StatefulWidget {
 }
 
 class _AddIncomePageState extends State<AddIncomePage> {
+  final database = ExpenseDatabase();
   String amount = "";
   PayPeriod? _selectedPayPeriod;
 
@@ -51,6 +60,14 @@ class _AddIncomePageState extends State<AddIncomePage> {
       resetField.clear(); // clear the TextField using its controller
       budgetField.clear(); // Clear the budget field
     });
+  }
+
+  void _addedIncomeMsg() {
+    final snackBar = SnackBar(
+      content: Text('Successfully added income'),
+      duration: Duration(seconds: 3),
+    );
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 
   @override
@@ -67,19 +84,6 @@ class _AddIncomePageState extends State<AddIncomePage> {
             );
           },
         ),
-        actions: <Widget>[
-          IconButton(
-            icon: Icon(Icons.arrow_forward),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) =>
-                        ViewDataPage()), //add page for viewing data
-              );
-            },
-          ),
-        ],
       ),
       body: Padding(
         padding: EdgeInsets.all(16.0),
@@ -147,7 +151,27 @@ class _AddIncomePageState extends State<AddIncomePage> {
             Center(
               child: Container(
                 child: ElevatedButton(
-                  onPressed: () {},
+                  onPressed: () async {
+                    if (_selectedPayPeriod != null && amount.isNotEmpty) {
+                      double? parsedAmount = double.tryParse(amount);
+                      if (parsedAmount != null) {
+                        String parsePayPeriod =
+                            _selectedPayPeriod.toString().split('.')[1];
+                        await database.insertIncome(
+                            parsedAmount, parsePayPeriod);
+                        // Check if budgetField is not empty, parse and insert to the budget table
+                        if (budgetField.text.isNotEmpty) {
+                          double? parsedBudget =
+                              double.tryParse(budgetField.text);
+                          if (parsedBudget != null) {
+                            await database.insertBudget(parsedBudget);
+                          }
+                        }
+                        resetData();
+                        _addedIncomeMsg();
+                      }
+                    }
+                  },
                   child: Text('Submit'),
                 ),
               ),
