@@ -84,6 +84,14 @@ class _AddExpensePageState extends State<AddExpensePage> {
       });
   }
 
+  void _addedExpenseMsg() {
+    final snackBar = SnackBar(
+      content: Text('Successfully added expense'),
+      duration: Duration(seconds: 3),
+    );
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -98,17 +106,6 @@ class _AddExpensePageState extends State<AddExpensePage> {
             );
           },
         ),
-        actions: <Widget>[
-          IconButton(
-            icon: Icon(Icons.arrow_forward),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => ViewDataPage()),
-              );
-            },
-          ),
-        ],
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -182,7 +179,7 @@ class _AddExpensePageState extends State<AddExpensePage> {
                           await database.insertExpense(parsedAmount, category,
                               description, selectedDate);
                           resetData();
-                          print("Expense inserted sucessfully");
+                          _addedExpenseMsg();
                         }
                       }
                     },
