@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'dashboard.dart';
+import 'database/db.dart';
 import 'signup.dart';
 
 class LoginPage extends StatefulWidget {
@@ -11,10 +13,12 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController _passwordController = TextEditingController();
   final GlobalKey<ScaffoldMessengerState> _scaffoldMessengerKey =
       GlobalKey<ScaffoldMessengerState>();
+  final _dbHelper = ExpenseDatabase();
 
   @override
   void initState() {
     super.initState();
+    _dbHelper.init();
   }
 
   @override
@@ -24,6 +28,7 @@ class _LoginPageState extends State<LoginPage> {
       child: Scaffold(
         appBar: AppBar(
           title: Text('Login'),
+          automaticallyImplyLeading: false,
         ),
         body: Padding(
           padding: const EdgeInsets.all(12.0),
@@ -82,11 +87,13 @@ class _LoginPageState extends State<LoginPage> {
         return;
       }
     }
+    _invalidLoginMsg();
+  }
 
   void _invalidLoginMsg() {
     final snackBar = SnackBar(
       content: Text('Incorrect username or password'),
-      duration: Duration(seconds: 3), // Set the duration as per your need
+      duration: Duration(seconds: 3),
     );
     _scaffoldMessengerKey.currentState!.showSnackBar(snackBar);
   }

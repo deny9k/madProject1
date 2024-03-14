@@ -6,7 +6,7 @@ import 'package:sqflite/sqlite_api.dart';
 class ExpenseDatabase {
   // For the User table
   static const String userTable = "user";
-  static const String userId = 'id';
+  static const String userId = 'user_id';
   static const String username = 'username';
   static const String password = 'password';
   static const String firstName = 'first_name';
@@ -87,8 +87,7 @@ class ExpenseDatabase {
   static const String incomePeriod = 'period';
   Future _onCreate(Database database, int version) async {
     // Creating the User table first because other tables reference it
-    await database.execute(
-        '''
+    await database.execute('''
         CREATE TABLE $userTable (
           $userId INTEGER PRIMARY KEY ,
            $firstName TEXT NOT NULL,     
@@ -98,8 +97,7 @@ class ExpenseDatabase {
         )
         ''');
 
-    await database.execute(
-        '''
+    await database.execute('''
         CREATE TABLE $expenseTable (
           $expenseId INTEGER PRIMARY KEY AUTOINCREMENT,
           $expenseAmount REAL NOT NULL,
@@ -111,8 +109,7 @@ class ExpenseDatabase {
         )
         ''');
 
-    await database.execute(
-        '''
+    await database.execute('''
         CREATE TABLE $incomeTable (
           $incomeId INTEGER PRIMARY KEY,
           $incomeAmount REAL NOT NULL,
@@ -122,8 +119,7 @@ class ExpenseDatabase {
         )
         ''');
 
-    await database.execute(
-        '''
+    await database.execute('''
         CREATE TABLE $budgetTable (
           $budgetId INTEGER PRIMARY KEY,
           $budgetAmount REAL NOT NULL,

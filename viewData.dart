@@ -1,6 +1,6 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter/material.dart';
-import 'db.dart';
+import 'database/db.dart';
 
 class ViewDataPage extends StatefulWidget {
   @override
@@ -40,8 +40,7 @@ class _ViewDataPageState extends State<ViewDataPage> {
         children: [
           ListTile(title: Text("Users"), dense: true),
           ...users.map((user) => ListTile(
-                title: Text("Username: ${user['username']}"),
-                subtitle: Text("Password: ${user['password']}"),
+                title: Text("Email: ${user['username']}"),
               )),
           ListTile(title: Text("Expenses"), dense: true),
           ...expenses.map((expense) => ListTile(
