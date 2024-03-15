@@ -70,6 +70,33 @@ class _AddIncomePageState extends State<AddIncomePage> {
     ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 
+  showAlertDialog(BuildContext context) {
+    // set up the button
+    Widget okButton = TextButton(
+      child: Text("OK"),
+      onPressed: () {
+        Navigator.of(context, rootNavigator: true).pop();
+      },
+    );
+
+    // set up the AlertDialog
+    AlertDialog alert = AlertDialog(
+      title: Text("Error"),
+      content: Text("Please enter a pay period and amount"),
+      actions: [
+        okButton,
+      ],
+    );
+
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -170,6 +197,8 @@ class _AddIncomePageState extends State<AddIncomePage> {
                         resetData();
                         _addedIncomeMsg();
                       }
+                    } else {
+                      showAlertDialog(context);
                     }
                   },
                   child: Text('Submit'),
