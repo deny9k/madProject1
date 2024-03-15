@@ -205,4 +205,19 @@ class ExpenseDatabase {
     );
     print("Data inserted successfully");
   }
+
+  Future<void> deleteExpenses() async {
+    await _database.execute(
+        '''DELETE FROM $expenseTable WHERE user_id = $loggedInUserId''');
+  }
+
+  Future<void> deleteIncome() async {
+    await _database.execute(
+        '''DELETE FROM $incomeTable WHERE user_id = $loggedInUserId''');
+  }
+
+  Future<void> deleteBudget() async {
+    await _database.execute(
+        '''DELETE FROM $budgetTable WHERE user_id = $loggedInUserId''');
+  }
 }
