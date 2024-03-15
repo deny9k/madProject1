@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'database/db.dart';
 import 'login.dart';
 
 class SignUpPage extends StatefulWidget {
@@ -18,6 +19,7 @@ class _SignUpPageState extends State<SignUpPage> {
     RegExp regex = RegExp(r'^(?=.*?[0-9])(?=.*[A-Z])(?=.*[a-z])');
 
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(title: Text('Create an Account')),
       body: Padding(
         padding: const EdgeInsets.all(12.0),
@@ -61,7 +63,7 @@ class _SignUpPageState extends State<SignUpPage> {
                 ),
                 keyboardType: TextInputType.emailAddress,
                 validator: (value) {
-                  if (value == null || value.isEmpty || !value.contains('@')) {
+                  if (value == null || value.isEmpty) {
                     return 'Please enter email';
                   }
                   if (!value.contains('@') || !value.contains('.')) {
@@ -106,6 +108,32 @@ class _SignUpPageState extends State<SignUpPage> {
   }
 
   void _submit() async {
-    if (_formKey.currentState!.validate()) {}
+    if (_formKey.currentState!.validate()) {
+      _formKey.currentState!.save();
+      // Save data to database
+      final database = ExpenseDatabase();
+      await database.init();
+
+      try {
+        await database.insertUser(_firstName, _lastName, _email, _password);
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => LoginPage()),
+        );
+      } catch (e) {
+        if (e.toString().contains('UNIQUE constraint failed')) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+                content: Text(
+                    'Email already in use. Please use a different email.')),
+          );
+        } else {
+          // Handle any other database exception
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('An error occurred. Please try again.')),
+          );
+        }
+      }
+    }
   }
 }
