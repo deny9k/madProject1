@@ -201,6 +201,7 @@ class _AddExpensePageState extends State<AddExpensePage> {
                 child: Container(
                   child: ElevatedButton(
                     onPressed: () async {
+                      FocusScope.of(context).unfocus();
                       if (category.isNotEmpty && amount.isNotEmpty) {
                         double? parsedAmount = double.tryParse(amount);
                         if (parsedAmount != null) {
