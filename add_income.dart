@@ -179,6 +179,7 @@ class _AddIncomePageState extends State<AddIncomePage> {
               child: Container(
                 child: ElevatedButton(
                   onPressed: () async {
+                    FocusScope.of(context).unfocus();
                     if (_selectedPayPeriod != null && amount.isNotEmpty) {
                       double? parsedAmount = double.tryParse(amount);
                       if (parsedAmount != null) {
