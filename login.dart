@@ -14,6 +14,8 @@ class _LoginPageState extends State<LoginPage> {
   final GlobalKey<ScaffoldMessengerState> _scaffoldMessengerKey =
       GlobalKey<ScaffoldMessengerState>();
   final _dbHelper = ExpenseDatabase();
+  bool _validateEmail = false;
+  bool _validatePass = false;
 
   @override
   void initState() {
@@ -40,6 +42,8 @@ class _LoginPageState extends State<LoginPage> {
                 decoration: InputDecoration(
                   labelText: 'Email',
                   border: OutlineInputBorder(),
+                  errorText:
+                      _validateEmail ? "Please enter an email address" : null,
                 ),
               ),
               SizedBox(height: 14),
@@ -49,11 +53,20 @@ class _LoginPageState extends State<LoginPage> {
                 decoration: InputDecoration(
                   labelText: 'Password',
                   border: OutlineInputBorder(),
+                  errorText: _validatePass ? "Please enter a password" : null,
                 ),
               ),
               SizedBox(height: 14),
               ElevatedButton(
-                onPressed: _login,
+                onPressed: () {
+                  setState(() {
+                    _validateEmail = _emailController.text.isEmpty;
+                    _validatePass = _passwordController.text.isEmpty;
+                  });
+                  if (_validateEmail == false && _validatePass == false) {
+                    _login();
+                  }
+                },
                 child: Text('Login'),
               ),
               SizedBox(height: 14),

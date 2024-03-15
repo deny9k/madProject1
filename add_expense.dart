@@ -53,6 +53,7 @@ class _AddExpensePageState extends State<AddExpensePage> {
   final amountController = TextEditingController();
   final categoryController = TextEditingController();
   final descriptionController = TextEditingController();
+
   void resetData() {
     amount = "";
     amountController.clear();
@@ -90,6 +91,33 @@ class _AddExpensePageState extends State<AddExpensePage> {
       duration: Duration(seconds: 3),
     );
     ScaffoldMessenger.of(context).showSnackBar(snackBar);
+  }
+
+  showAlertDialog(BuildContext context) {
+    // set up the button
+    Widget okButton = TextButton(
+      child: Text("OK"),
+      onPressed: () {
+        Navigator.of(context, rootNavigator: true).pop();
+      },
+    );
+
+    // set up the AlertDialog
+    AlertDialog alert = AlertDialog(
+      title: Text("Error"),
+      content: Text("Please enter an amount and a category"),
+      actions: [
+        okButton,
+      ],
+    );
+
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
   }
 
   @override
@@ -181,6 +209,8 @@ class _AddExpensePageState extends State<AddExpensePage> {
                           resetData();
                           _addedExpenseMsg();
                         }
+                      } else {
+                        showAlertDialog(context);
                       }
                     },
                     child: Text('Submit'),
